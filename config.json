@@ -1,0 +1,66 @@
+{
+  "vertex": {
+    "project_id": "ncau-data-newsquery-sit",
+    "location": "us-central1",
+    "model": "gemini-2.5-pro",
+    "enabled": true,
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "max_output_tokens": 8192
+  },
+  "project": {
+    "query_project_id": "ncau-data-newsquery-sit",
+    "bq_location": "US"
+  },
+  "results": {
+    "project_id": "ncau-data-newsquery-sit",
+    "table": "finops_demo.optimiser_results"
+  },
+  "window": {
+    "days": 3
+  },
+  "selection": {
+    "limit_per_criteria": 10,
+    "fetch_limit": 50
+  },
+  "complexity": {
+    "max_query_length": 3000,
+    "max_joins": 3,
+    "max_subquery_nesting": 2,
+    "allow_except": false,
+    "allow_intersect": false,
+    "allow_union": false,
+    "allow_full_outer_join": false,
+    "allow_qualify": false,
+    "allow_multiple_ctes": false
+  },
+  "optimization": {
+    "check_select_star": true,
+    "check_subquery_select_star": true,
+    "check_missing_partition_filter": true,
+    "check_order_by_no_limit": true,
+    "schema_column_limit": 20
+  },
+  "safety": {
+    "max_cost_per_query": 50.0,
+    "max_gb_per_query": 2500,
+    "max_query_length": 10000,
+    "dry_run_timeout_seconds": 25
+  },
+  "output": {
+    "dir": "Optimise_SQL",
+    "save_debug_queries": true
+  },
+  "validation": {
+    "use_dry_run": true,
+    "bytes_tolerance_pct": 0.0
+  },
+  "cost": {
+    "cost_per_gb": 0.02,
+    "cost_decimals": 6,
+    "cost_per_tb": 5.0
+  },
+  "prompt": {
+    "system_message": "You are a BigQuery SQL optimization expert focused on reducing bytes scanned.\n\nSCHEMA INFORMATION:\n{schema_context}\n\nCRITICAL RULES:\n1. You MUST make optimizations to reduce bytes scanned\n2. Use the schema information above - only reference columns and tables that exist\n3. Add partition filters using the actual partition column names from the schema\n4. Replace SELECT * with explicit columns from the schema\n5. Only reference columns that actually exist in the tables\n\nSafe optimizations to apply:\n1. Replace SELECT * with explicit columns (use schema above)\n2. Add WHERE filters on partition columns (use exact names from schema)\n3. Push existing WHERE filters deeper into subqueries\n4. Remove unnecessary columns from subqueries\n\nNEVER do:\n- Reference columns not in the schema above\n- Add filters on non-existent columns\n- Change table names\n- Hallucinate column names\n\nOUTPUT REQUIREMENTS:\n- Return ONLY the optimized SQL query\n- No explanations, no markdown formatting, no comments\n- Must be syntactically valid BigQuery SQL\n- Must reference only columns/tables from the schema above\n\nORIGINAL SQL:\n{sql}\n\nOPTIMIZED SQL:"
+  }
+}
